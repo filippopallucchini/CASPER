@@ -1,0 +1,9 @@
+Component,Base Importance,Net Synergy,Primary Partner,Role,Recommendation,Reasoning
+con,0.9320949010262509,-0.45917347412442844,mse (-0.317),⚡ STRONG SOLO,KEEP (Review Conflicts),"High value, but fights others"
+mse,0.7703769565095973,-0.4495125888890491,con (-0.317),⚡ STRONG SOLO,KEEP (Review Conflicts),"High value, but fights others"
+cycle,0.35220673663766694,-0.3945382614722873,con (-0.173),⚡ STRONG SOLO,KEEP (Review Conflicts),"High value, but fights others"
+tlm,0.09483434193963755,-0.2129455915476013,mse (-0.069),⚡ STRONG SOLO,KEEP (Review Conflicts),"High value, but fights others"
+structure,0.05174003094863101,0.09641412422706508,con (+0.093),🌟 CORE ASSET,MUST KEEP,High value + Helps others
+local,0.012327920897716605,0.001482371639736746,mse (+0.029),🌟 CORE ASSET,MUST KEEP,High value + Helps others
+global,0.010852611795210843,-0.007874707530681091,mse (+0.027),⚡ STRONG SOLO,KEEP (Review Conflicts),"High value, but fights others"
+filter,0.0010342839246009982,0.005458524088240879,con (+0.004),🌟 CORE ASSET,MUST KEEP,High value + Helps others
