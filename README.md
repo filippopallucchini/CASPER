@@ -16,7 +16,7 @@ The same recipe transfers, unchanged, to the residual streams of autoregressive 
 |---|---|---|---|
 | **CASPER** (default, source-only) | `z_s` | `ALIGNMENT_OFFICIAL_diff_dim_linear_unsupervised.py` | `StandaloneMapper` |
 | **CASPER-TC** (target-conditioned) | `z_s`, `z_t` | `ALIGNMENT_OFFICIAL_diff_dim_linear.py` | `LinearInjectionMapper` |
-| **CASPER-TC on decoders** | `h_s`, `h_t` (last-layer residuals) | `ALIGNMENT_OFFICIAL_diff_dim_linear_decoder_v2.py` | `LinearInjectionMapper` |
+| **CASPER-TC on decoders** | `h_s`, `h_t` (last-layer residuals) | `ALIGNMENT_OFFICIAL_diff_dim_linear_decoder.py` | `LinearInjectionMapper` |
 
 Both variants share the same residual-MLP backbone and the same multi-objective loss; they differ only at the injection step:
 
