@@ -6,7 +6,7 @@ CASPER projects embeddings produced by a *source* encoder into the native space 
 
 The same recipe transfers, unchanged, to the residual streams of autoregressive decoders (cross-family bridging, e.g. Qwen3-0.6B → Llama-3.2-1B).
 
-> Paper: *CASPER: Learning Structure-Preserving Embedding Alignment* (under review, ARR / EACL 2027). Trained mappers will be released on Hugging Face upon acceptance.
+> Paper: *CASPER: Learning Structure-Preserving Embedding Alignment*, **EACL 2027** (main conference). Trained mappers: Hugging Face (link coming soon).
 
 ---
 
@@ -16,7 +16,7 @@ The same recipe transfers, unchanged, to the residual streams of autoregressive 
 |---|---|---|---|
 | **CASPER** (default, source-only) | `z_s` | `ALIGNMENT_OFFICIAL_diff_dim_linear_unsupervised.py` | `StandaloneMapper` |
 | **CASPER-TC** (target-conditioned) | `z_s`, `z_t` | `ALIGNMENT_OFFICIAL_diff_dim_linear.py` | `LinearInjectionMapper` |
-| **CASPER-TC on decoders** | `h_s`, `h_t` (last-layer residuals) | `ALIGNMENT_OFFICIAL_diff_dim_linear_decoder.py` | `LinearInjectionMapper` |
+| **CASPER-TC on decoders** | `h_s`, `h_t` (last-layer residuals) | `llm_aligment/ALIGNMENT_OFFICIAL_diff_dim_linear_decoder.py` | `LinearInjectionMapper` |
 
 Both variants share the same residual-MLP backbone and the same multi-objective loss; they differ only at the injection step:
 
@@ -51,13 +51,18 @@ L = 0.375 · L_struct + 0.1875 · L_Macro + 0.1875 · L_Micro + 0.1875 · L_tlm 
 
 ## Repository structure
 
-*(adapt to the actual tree)*
-
 ```
 CASPER/
 ├── ALIGNMENT_OFFICIAL_diff_dim_linear.py               # CASPER-TC, encoders
 ├── ALIGNMENT_OFFICIAL_diff_dim_linear_unsupervised.py  # CASPER (source-only), encoders
-├── ALIGNMENT_OFFICIAL_diff_dim_linear_decoder_v2.py    # CASPER-TC, decoder residual streams
+├── INTERFACE_CASPER_unsup.ipynb                        # minimal usage example (CASPER)
+├── ablation_study/                                     # loss ablations and weight grid search (Sec. 3)
+├── eval/                                               # vec2vec comparison, OOD and functional SP tests (Sec. 4)
+├── analysis/                                           # additional analyses and visualisations
+├── adversarial_detection/                              # adversarial detection (App. L)
+├── temporal_shift/                                     # temporal-drift detection (App. M)
+├── domain_shift/                                       # domain-specialisation detection (App. N)
+├── llm_aligment/                                       # CASPER-TC on decoder residual streams (App. O)
 ├── nq_reservoir.db                                     # built on first run (encoders)
 ├── nq_reservoir_resid.db                               # built on first run (decoders)
 └── saved_mappers_<run_tag>/                            # outputs, one folder per run
@@ -120,7 +125,7 @@ z_hat_t, _ = m(z_s)                       # CASPER
 ### 3. Decoder bridging (CASPER-TC on residual streams)
 
 ```bash
-PYTHONUNBUFFERED=1 python ALIGNMENT_OFFICIAL_diff_dim_linear_decoder_v2.py
+PYTHONUNBUFFERED=1 python llm_aligment/ALIGNMENT_OFFICIAL_diff_dim_linear_decoder.py
 ```
 
 Extracts last-layer, last-token **pre-norm** residuals of `Qwen/Qwen3-0.6B` and `meta-llama/Llama-3.2-1B` on 2 M NQ chunks into on-disk memmaps, standardises each side by its empirical std, trains a 5-block bridge, and saves a self-describing checkpoint:
@@ -132,7 +137,7 @@ Extracts last-layer, last-token **pre-norm** residuals of `Qwen/Qwen3-0.6B` and 
  'loss_config': {...}}
 ```
 
-At inference the projected residual must pass through the target's final `RMSNorm` before `lm_head` (Eq. 15 of the paper); the script ends with a 4-way generation demo showing exactly this. Merging recipes (Hybrid-α, SLERP) and the hijacking / LLM-as-a-Judge evaluations of Appendix N build on this checkpoint.
+At inference the projected residual must pass through the target's final `RMSNorm` before `lm_head` (Eq. 15 of the paper); the script ends with a 4-way generation demo showing exactly this. Merging recipes (Hybrid-α, SLERP) and the hijacking / LLM-as-a-Judge evaluations of Appendix O build on this checkpoint.
 
 ## Configuration
 
@@ -190,18 +195,21 @@ NQ dev, 65,536 passages, 20 encoder pairs (paper Table 2):
 | **CASPER** | 0.86–0.94 | 0.99–1.00 | 1.0 | 0.94–0.99 |
 | **CASPER-TC** | 0.90–0.98 | 1.00 | 1.0 | 0.93–0.99 |
 
-Median training time: 5h50m (CASPER) and 5h29m (CASPER-TC) vs 48h19m (vec2vec) on one RTX A6000. SP is validated as a predictor of neighbourhood retention (Spearman(SP, Jaccard@10) = 0.97, Appendix J).
+Median training time: 5h50m (CASPER) and 5h29m (CASPER-TC) vs 48h19m (vec2vec) on one RTX A6000. SP is validated as a predictor of neighbourhood retention (Spearman(SP, Jaccard@10) = 0.97, Appendix K).
 
-Downstream applications (Section 6 / Appendices K–N): adversarial detection on AdvGLUE, temporal-drift detection, domain-specialisation detection, cross-family decoder bridging with strict Pareto gains over both parents on TruthfulQA and NQ-Open.
+Downstream applications (Section 6 / Appendices L–O): adversarial detection on AdvGLUE, temporal-drift detection, domain-specialisation detection, cross-family decoder bridging with strict Pareto gains over both parents on TruthfulQA and NQ-Open.
 
 ## Citation
 
 ```bibtex
-@inproceedings{casper2027,
-  title     = {CASPER: Learning Structure-Preserving Embedding Alignment},
-  author    = {Anonymous},
-  booktitle = {Under review},
-  year      = {2027}
+@inproceedings{pallucchini-etal-2027-casper,
+  title     = {{CASPER}: Learning Structure-Preserving Embedding Alignment},
+  author    = {Pallucchini, Filippo and Malandri, Lorenzo and Nobani, Navid and Mercorio, Fabio},
+  booktitle = {Proceedings of the 20th Conference of the European Chapter of the Association for Computational Linguistics (Volume 1: Long Papers)},
+  month     = mar,
+  year      = {2027},
+  address   = {Athens, Greece},
+  publisher = {Association for Computational Linguistics}
 }
 ```
 
