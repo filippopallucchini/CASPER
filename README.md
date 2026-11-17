@@ -185,7 +185,7 @@ Each run writes to `saved_mappers_<run_tag>/`:
 | Decoder | Gemma-4-E4B-it | — | `google/gemma-4-E4B-it` |
 | Judge | Qwen2.5-1.5B-Instruct | — | `Qwen/Qwen2.5-1.5B-Instruct` |
 
-## Headline results
+## Results
 
 NQ dev, 65,536 passages, 20 encoder pairs (paper Table 2):
 
@@ -215,4 +215,5 @@ Downstream applications (Section 6 / Appendices L–O): adversarial detection on
 
 ## License
 
-TBD.
+The original code and documentation in this repository are released under the [MIT License](LICENSE).
+Third-party libraries, datasets and pretrained models remain subject to their respective licences.
